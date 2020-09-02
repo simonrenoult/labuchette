@@ -100,7 +100,7 @@ export default class Joueur {
     this.points += points;
   }
 
-  getPoints(): number {
+  compterLesPoints(): number {
     return this.points;
   }
 
@@ -115,5 +115,8 @@ export default class Joueur {
 
   toString(): string {
     return this.nom + " - " + this.points + "pts";
+  }
+  setPoints(points: number): void {
+    this.points = points;
   }
 }

@@ -10,6 +10,6 @@
 - [ ] Implémenter le pouvoir du roi rouge
 - [ ] Intégrer les jokers
 - [ ] Implémenter le pouvoir du Joker
-- [ ] Intégrer la "buchette" (faire 100 points fait redescendre à 50)
-- [ ] Intégrer la "chèvre" (faire 50 points fait redescendre à 45)
+- [x] Intégrer la "buchette" (faire 100 points fait redescendre à 50)
+- [x] Intégrer la "chèvre" (faire 50 points fait redescendre à 45)
 - [ ] Intégrer la possibilité de "taper" (= annoncer le dernier tour)

@@ -16,12 +16,14 @@ import {
   Dix,
   Huit,
   Neuf,
+  Roi,
   Sept,
   Six,
   Trois,
   Valet,
 } from "./carte.fixture";
 import Joueur from "./joueur";
+import Carte from "./carte";
 
 describe(Buchette.name, () => {
   describe(".creer()", async () => {
@@ -85,6 +87,101 @@ describe(Buchette.name, () => {
     });
   });
 
+  describe(".mettreAJourLesPointsDeChaqueJoueur()", async () => {
+    [
+      {
+        contexte: "quand la main des joueurs est vide",
+        titre: "les points restent à 0",
+        quand: (joueurs: Joueur[]) =>
+          joueurs.forEach((j) => j.constituerLaMainDeDepart([])),
+        assertion: (joueurs: Joueur[]) =>
+          joueurs.forEach((j) => {
+            expect(j.compterLesPoints()).to.equal(0);
+          }),
+      },
+      {
+        contexte: "quand un joueur fait une chèvre",
+        titre: "ses points redescendent à la valeur de la chèvre moins 5",
+        quand: (joueurs: Joueur[]) => {
+          joueurs[0].constituerLaMainDeDepart([
+            Carte.creer("carreau", "As", 50),
+          ]);
+          joueurs[1].constituerLaMainDeDepart([
+            Carte.creer("carreau", "Roi", 40),
+          ]);
+        },
+        assertion: (joueurs: Joueur[]) => {
+          expect(joueurs[0].compterLesPoints()).to.equal(45);
+          expect(joueurs[1].compterLesPoints()).to.equal(40);
+        },
+      },
+      {
+        contexte: "quand un joueur fait une buchette",
+        titre: "ses points redescendent à la moitié du seuil",
+        quand: (joueurs: Joueur[]) => {
+          joueurs[0].constituerLaMainDeDepart([
+            Carte.creer("carreau", "As", 100),
+          ]);
+          joueurs[1].constituerLaMainDeDepart([
+            Carte.creer("carreau", "Roi", 90),
+          ]);
+        },
+        assertion: (joueurs: Joueur[]) => {
+          expect(joueurs[0].compterLesPoints()).to.equal(50);
+          expect(joueurs[1].compterLesPoints()).to.equal(90);
+        },
+      },
+      {
+        contexte: "quand un joueur atteint un nombre de points fixe",
+        titre: "ses points sont correctement comptés",
+        quand: (joueurs: Joueur[]) => {
+          joueurs[0].constituerLaMainDeDepart([
+            Trois.de.Trefle(),
+            Roi.de.Pique(),
+          ]);
+          joueurs[1].constituerLaMainDeDepart([
+            Deux.de.Coeur(),
+            Six.de.Pique(),
+          ]);
+        },
+        assertion: (joueurs: Joueur[]) => {
+          expect(joueurs[0].compterLesPoints()).to.equal(
+            Trois.de.Trefle().points + Roi.de.Pique().points
+          );
+          expect(joueurs[1].compterLesPoints()).to.equal(
+            Deux.de.Coeur().points + Six.de.Pique().points
+          );
+        },
+      },
+    ].forEach(({ contexte, titre, quand, assertion }) => {
+      describe(contexte, () => {
+        it(titre, () => {
+          // Given
+          const pioche = Pioche.creer();
+          const defausse = Defausse.creer();
+          const joueurs = QuiParticipe.DeuxJoueurs.creer(
+            OuPiocher.ToujoursLaPioche.creer(pioche, defausse),
+            QuelleCarteJouer.ToujoursLaPremiereCarte.creer(),
+            QuelleCarteRegarder.ToujoursUneCarteAleatoire.creer()
+          );
+          const unePartieDeBuchette = Buchette.creer(
+            joueurs,
+            pioche,
+            defausse,
+            { seuilDePointsADepasser: 100 }
+          );
+
+          // When
+          quand(joueurs);
+          unePartieDeBuchette.mettreAJourLesPointsDeChaqueJoueur();
+
+          // Then
+          assertion(joueurs);
+        });
+      });
+    });
+  });
+
   describe(".commencerUneManche()", () => {
     describe("quand la pioche se vide avant que les joueurs ne vident leur main", () => {
       let unePartieDeBuchette: Buchette;
@@ -132,8 +229,8 @@ describe(Buchette.name, () => {
 
       it("les points sont correctement comptabilisés", async () => {
         // Then
-        expect(joueurs[0].getPoints()).to.equal(Trois.de.Coeur().points);
-        expect(joueurs[1].getPoints()).to.equal(Deux.de.Pique().points);
+        expect(joueurs[0].compterLesPoints()).to.equal(Trois.de.Coeur().points);
+        expect(joueurs[1].compterLesPoints()).to.equal(Deux.de.Pique().points);
       });
     });
 
@@ -187,8 +284,8 @@ describe(Buchette.name, () => {
 
       it("les points sont correctement comptabilisés", () => {
         // Then
-        expect(joueurs[0].getPoints()).to.equal(Deux.de.Pique().points);
-        expect(joueurs[1].getPoints()).to.equal(0);
+        expect(joueurs[0].compterLesPoints()).to.equal(Deux.de.Pique().points);
+        expect(joueurs[1].compterLesPoints()).to.equal(0);
       });
     });
   });
@@ -239,8 +336,8 @@ describe(Buchette.name, () => {
 
       it("les points sont correctement comptabilisés", () => {
         // Then
-        expect(joueurs[0].getPoints()).to.equal(11);
-        expect(joueurs[1].getPoints()).to.equal(22);
+        expect(joueurs[0].compterLesPoints()).to.equal(11);
+        expect(joueurs[1].compterLesPoints()).to.equal(22);
       });
     });
   });

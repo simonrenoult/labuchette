@@ -105,7 +105,22 @@ export default class Buchette {
   }
 
   mettreAJourLesPointsDeChaqueJoueur(): void {
-    this.joueurs.forEach((j) => j.ajouterPoints(j.compterLesPointsDeLaMain()));
+    this.joueurs.forEach((j) => {
+      j.ajouterPoints(j.compterLesPointsDeLaMain());
+
+      // Faire une chèvre
+      if (
+        j.compterLesPoints() ===
+        Math.round(this.options.seuilDePointsADepasser / 2)
+      ) {
+        j.setPoints(Math.round(this.options.seuilDePointsADepasser / 2) - 5);
+      }
+
+      // Faire une buchette
+      if (j.compterLesPoints() === this.options.seuilDePointsADepasser) {
+        j.setPoints(Math.round(this.options.seuilDePointsADepasser / 2));
+      }
+    });
   }
 
   compterLesJoueurs(): number {
@@ -126,7 +141,7 @@ export default class Buchette {
 
   laPartieEstTerminee(): boolean {
     return this.joueurs.some(
-      (j) => j.getPoints() > this.options.seuilDePointsADepasser
+      (j) => j.compterLesPoints() > this.options.seuilDePointsADepasser
     );
   }
 
